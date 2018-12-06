@@ -1,7 +1,7 @@
 # source: https://us1.prisma.sh/thomas-maximini-24ed80/coffee-db-backend/dev
-# timestamp: Sun Dec 02 2018 15:22:16 GMT+0700 (GMT+07:00)
+# timestamp: Thu Dec 06 2018 13:37:58 GMT+0700 (GMT+07:00)
 
-type AggregateCoffee {
+type AggregateItem {
   count: Int!
 }
 
@@ -14,71 +14,76 @@ type BatchPayload {
   count: Long!
 }
 
-type Coffee implements Node {
+type Item implements Node {
   id: ID!
   title: String!
   description: String
+  type: ItemType!
 }
 
 """A connection to a list of items."""
-type CoffeeConnection {
+type ItemConnection {
   """Information to aid in pagination."""
   pageInfo: PageInfo!
 
   """A list of edges."""
-  edges: [CoffeeEdge]!
-  aggregate: AggregateCoffee!
+  edges: [ItemEdge]!
+  aggregate: AggregateItem!
 }
 
-input CoffeeCreateInput {
+input ItemCreateInput {
   title: String!
   description: String
+  type: ItemType!
 }
 
 """An edge in a connection."""
-type CoffeeEdge {
+type ItemEdge {
   """The item at the end of the edge."""
-  node: Coffee!
+  node: Item!
 
   """A cursor for use in pagination."""
   cursor: String!
 }
 
-enum CoffeeOrderByInput {
+enum ItemOrderByInput {
   id_ASC
   id_DESC
   title_ASC
   title_DESC
   description_ASC
   description_DESC
+  type_ASC
+  type_DESC
   updatedAt_ASC
   updatedAt_DESC
   createdAt_ASC
   createdAt_DESC
 }
 
-type CoffeePreviousValues {
+type ItemPreviousValues {
   id: ID!
   title: String!
   description: String
+  type: ItemType!
 }
 
-type CoffeeSubscriptionPayload {
+type ItemSubscriptionPayload {
   mutation: MutationType!
-  node: Coffee
+  node: Item
   updatedFields: [String!]
-  previousValues: CoffeePreviousValues
+  previousValues: ItemPreviousValues
 }
 
-input CoffeeSubscriptionWhereInput {
+input ItemSubscriptionWhereInput {
   """Logical AND on all given filters."""
-  AND: [CoffeeSubscriptionWhereInput!]
+  AND: [ItemSubscriptionWhereInput!]
 
   """Logical OR on all given filters."""
-  OR: [CoffeeSubscriptionWhereInput!]
+  OR: [ItemSubscriptionWhereInput!]
 
   """Logical NOT on all given filters combined by AND."""
-  NOT: [CoffeeSubscriptionWhereInput!]
+  NOT: [ItemSubscriptionWhereInput!]
 
   """
   The subscription event gets dispatched when it's listed in mutation_in
@@ -99,28 +104,36 @@ input CoffeeSubscriptionWhereInput {
   The subscription event gets only dispatched when some of the field names included in this list have been updated
   """
   updatedFields_contains_some: [String!]
-  node: CoffeeWhereInput
+  node: ItemWhereInput
 }
 
-input CoffeeUpdateInput {
+enum ItemType {
+  COFFEE
+  BEAN
+  MACHINE
+}
+
+input ItemUpdateInput {
   title: String
   description: String
+  type: ItemType
 }
 
-input CoffeeUpdateManyMutationInput {
+input ItemUpdateManyMutationInput {
   title: String
   description: String
+  type: ItemType
 }
 
-input CoffeeWhereInput {
+input ItemWhereInput {
   """Logical AND on all given filters."""
-  AND: [CoffeeWhereInput!]
+  AND: [ItemWhereInput!]
 
   """Logical OR on all given filters."""
-  OR: [CoffeeWhereInput!]
+  OR: [ItemWhereInput!]
 
   """Logical NOT on all given filters combined by AND."""
-  NOT: [CoffeeWhereInput!]
+  NOT: [ItemWhereInput!]
   id: ID
 
   """All values that are not equal to given value."""
@@ -241,9 +254,19 @@ input CoffeeWhereInput {
 
   """All values not ending with the given string."""
   description_not_ends_with: String
+  type: ItemType
+
+  """All values that are not equal to given value."""
+  type_not: ItemType
+
+  """All values that are contained in given list."""
+  type_in: [ItemType!]
+
+  """All values that are not contained in given list."""
+  type_not_in: [ItemType!]
 }
 
-input CoffeeWhereUniqueInput {
+input ItemWhereUniqueInput {
   id: ID
 }
 
@@ -255,17 +278,17 @@ scalar Long
 
 type Mutation {
   createUser(data: UserCreateInput!): User!
-  createCoffee(data: CoffeeCreateInput!): Coffee!
+  createItem(data: ItemCreateInput!): Item!
   updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
-  updateCoffee(data: CoffeeUpdateInput!, where: CoffeeWhereUniqueInput!): Coffee
+  updateItem(data: ItemUpdateInput!, where: ItemWhereUniqueInput!): Item
   deleteUser(where: UserWhereUniqueInput!): User
-  deleteCoffee(where: CoffeeWhereUniqueInput!): Coffee
+  deleteItem(where: ItemWhereUniqueInput!): Item
   upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
-  upsertCoffee(where: CoffeeWhereUniqueInput!, create: CoffeeCreateInput!, update: CoffeeUpdateInput!): Coffee!
+  upsertItem(where: ItemWhereUniqueInput!, create: ItemCreateInput!, update: ItemUpdateInput!): Item!
   updateManyUsers(data: UserUpdateManyMutationInput!, where: UserWhereInput): BatchPayload!
-  updateManyCoffees(data: CoffeeUpdateManyMutationInput!, where: CoffeeWhereInput): BatchPayload!
+  updateManyItems(data: ItemUpdateManyMutationInput!, where: ItemWhereInput): BatchPayload!
   deleteManyUsers(where: UserWhereInput): BatchPayload!
-  deleteManyCoffees(where: CoffeeWhereInput): BatchPayload!
+  deleteManyItems(where: ItemWhereInput): BatchPayload!
 }
 
 enum MutationType {
@@ -297,11 +320,11 @@ type PageInfo {
 
 type Query {
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
-  coffees(where: CoffeeWhereInput, orderBy: CoffeeOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Coffee]!
+  items(where: ItemWhereInput, orderBy: ItemOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Item]!
   user(where: UserWhereUniqueInput!): User
-  coffee(where: CoffeeWhereUniqueInput!): Coffee
+  item(where: ItemWhereUniqueInput!): Item
   usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
-  coffeesConnection(where: CoffeeWhereInput, orderBy: CoffeeOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): CoffeeConnection!
+  itemsConnection(where: ItemWhereInput, orderBy: ItemOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): ItemConnection!
 
   """Fetches an object given its ID"""
   node(
@@ -312,7 +335,7 @@ type Query {
 
 type Subscription {
   user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
-  coffee(where: CoffeeSubscriptionWhereInput): CoffeeSubscriptionPayload
+  item(where: ItemSubscriptionWhereInput): ItemSubscriptionPayload
 }
 
 type User implements Node {

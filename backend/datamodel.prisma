@@ -1,10 +1,26 @@
+enum ItemType {
+  COFFEE
+  BEAN
+  MACHINE
+}
+
+enum Permission {
+  ADMIN
+  USER
+  ITEMCREATE
+  ITEMUPDATE
+  ITEMDELETE
+  PERMISSIONUPDATE
+}
+
 type User {
   id: ID! @unique
   name: String!
 }
 
-type Coffee {
+type Item {
   id: ID! @unique
   title: String!
   description: String
+  type: ItemType!
 }

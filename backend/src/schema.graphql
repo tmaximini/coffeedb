@@ -1,11 +1,53 @@
 # import * from './generated/prisma.graphql'
 
+type SuccessMessage {
+  message: String
+}
+
+enum ItemType {
+  COFFEE
+  BEAN
+  MACHINE
+}
+
+enum Permission {
+  ADMIN
+  USER
+  ITEMCREATE
+  ITEMUPDATE
+  ITEMDELETE
+  PERMISSIONUPDATE
+}
+
+type User {
+  id: ID!
+  name: String!
+  email: String!
+}
+
+type Item {
+  id: ID!
+  title: String!
+  description: String!
+  type: ItemType!
+}
+
 type Mutation {
-  createCoffee(title: String, description: String): Coffee!
+  createItem(title: String!, description: String, type: ItemType!): Item!
+  updateItem(id: ID!, title: String, description: String, type: ItemType): Item!
 }
 
 type Query {
-  coffees: [Coffee]!
-  coffee(where: CoffeeWhereInput): Coffee
+  item(where: ItemWhereUniqueInput!): Item
+  items(
+    where: ItemWhereInput
+    orderBy: ItemOrderByInput
+    skip: Int
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): [Item]!
+  itemsConnection(where: ItemWhereInput): ItemConnection!
   users: [User]!
 }
